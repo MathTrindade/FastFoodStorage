@@ -36,6 +36,28 @@ public class FastFoodStorage {
     
     storage.addFood(fries);
     
+    // testing displayFood to show all food items in storage
+storage.displayFood();
+ 
+
+// searchFood to find Pizza in storage
+FoodItem foundFood = storage.searchFood("Pizza");
+
+if (foundFood != null) {
+    System.out.println("Food found: " + foundFood.getName());
+
+} else {
+    System.out.println("Food not found!");
+}
+
+// testing peekfood to see the next food without removint it 
+FoodItem nextFood = storage.peekFood();
+
+if (nextFood != null) {
+    System.out.println("Next food: " + nextFood.getName());
+}
+
+    
      // testing FIFO First In, First Out
         System.out.println("\nTesting FIFO:");
 

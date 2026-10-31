@@ -87,4 +87,58 @@ private FoodItem[] items = new FoodItem[MAX_SIZE];
 
         return removedFood;
 }
+
+
+
+public FoodItem peekFood() {
+   
+    if (isEmpty()) {
+    System.out.println("Storage is empty!");
+     
+    return null;
+    }
+    return items[front];
+}
+
+
+    // Display all food items currently in storage
+    public void displayFood()
+    {
+        if (isEmpty()) {
+            System.out.println("Storage is empty!");
+            return;
+        }
+
+     System.out.println("Food items in storage:");
+
+        for (int i = 0; i < count; i++) {
+            int position = (front + i) % MAX_SIZE;
+            FoodItem food = items[position];
+
+            System.out.println(
+                food.getName() + " - " +
+                food.getWeight() + "g - Best before: " +
+                food.getBestBeforeDate()
+            );
+        }
+    }
+
+    
+    // search for a food item by its name
+    public FoodItem searchFood(String name) {
+        for (int i = 0; i < count; i++) {
+            int position = (front + i) % MAX_SIZE;
+            FoodItem food = items[position];
+
+            if (food.getName().equalsIgnoreCase(name)) {
+                return food;
+            }
+        }
+
+        return null;
+    }
+
+    
+    
+    
 }
