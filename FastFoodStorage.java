@@ -16,18 +16,35 @@ public class FastFoodStorage {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        // main method start the program
         FoodStorage storage = new FoodStorage();
 
        
-        
 
-// Scanner to read user input
+// scanner is used to get information typed by the user
 Scanner scanner = new Scanner(System.in);
         
-        //creating three food items
+        // here i create three food items to test the storage
+
+    FoodItem burger = new FoodItem("Burger", 250, LocalDate.now().plusDays(5));
+    
+    FoodItem pizza = new FoodItem("Pizza", 400, LocalDate.now().plusDays(7));
+    
+    FoodItem fries = new FoodItem("Fries", 150, LocalDate.now().plusDays(3));
         
-        // Menu options for the user
+    // adding the three foods inside the storage
+    
+    storage.addFood(burger);
+    
+    storage.addFood(pizza);
+    
+    storage.addFood(fries);
+
+
+// this loop keep showing the menu until user select exit
+while (true) {
+        
+        // showing all the options available for the user
 System.out.println("\n=== Fast Food Storage Menu ===");
 
 System.out.println("1. Add food");
@@ -44,44 +61,48 @@ System.out.println("6. Peek food");
 
 System.out.println("0. Exit");
 
-// Read the option selected by the user
+// reading the option entered in the console
 System.out.print("Choose an option: ");
 String option = scanner.nextLine();
 
 System.out.println("You selected: " + option);
 
-// Check the selected menu option
+// option 4 show the food currently inside storage
 if (option.equals("4")) {
     storage.displayFood();
 }
         
 
-// Remove the oldest food when option 2 is selected
+// fifo remove the food that was added first
 if (option.equals("2")) {
     storage.removeFoodFIFO();
 }
 
-// Remove the newest food when option 3 is selected
+// lifo remove the food that was added last
 if (option.equals("3")) {
     storage.removeFoodLIFO();
 }
 
-// Check the next food when option 6 is selected
+// peek check the next food without removing from storage
 if (option.equals("6")) {
     FoodItem next = storage.peekFood();
 
+    // only show the name if there is a food available
     if (next != null) {
         System.out.println("Next food: " + next.getName());
     }
 }
 
-// Search for food when option 5 is selected
+
+// option 5 let the user search a food using the name
 if (option.equals("5")) {
     System.out.print("Enter food name: ");
     String foodName = scanner.nextLine();
 
+    // searching the food inside storage
     FoodItem found = storage.searchFood(foodName);
 
+    // show if the food was found or not
     if (found != null) {
         System.out.println("Food found: " + found.getName());
     } else {
@@ -89,45 +110,81 @@ if (option.equals("5")) {
     }
 }
 
-    FoodItem burger = new FoodItem("Burger", 250, LocalDate.now().plusDays(5));
-    
-    FoodItem pizza = new FoodItem("Pizza", 400, LocalDate.now().plusDays(7));
-    
-    FoodItem fries = new FoodItem("Fries", 150, LocalDate.now().plusDays(3));
-        
-    //adding food to the storage 
-    
-    storage.addFood(burger);
-    
-    storage.addFood(pizza);
-    
-    storage.addFood(fries);
-    
-    // an invalid food weight
+    // option 1 is used to add a new food from user input
+if (option.equals("1")) {
+    try {
+    // asking the name of the food
+    System.out.print("Enter food name: ");
+    String foodName = scanner.nextLine();
+
+    // asking the weight and converting text to a number
+    System.out.print("Enter food weight in grams: ");
+    double weight = Double.parseDouble(scanner.nextLine());
+
+    // asking the best before date of the food
+    System.out.print("Enter best-before date (YYYY-MM-DD): ");
+    LocalDate date = LocalDate.parse(scanner.nextLine());
+
+    // creating the food object and trying to add in storage
+    FoodItem newFood = new FoodItem(foodName, weight, date);
+    storage.addFood(newFood);
+
+    // this catch show message if the weight is not a number
+    } catch (NumberFormatException e) {
+        System.out.println("Invalid weight! Please enter a number.");
+
+    // this catch show message if date format is incorrect
+    } catch (java.time.format.DateTimeParseException e) {
+        System.out.println("Invalid date! Please use YYYY-MM-DD.");
+    }
+}
+
+// option 0 stop the menu loop
+if (option.equals("0")) {
+    System.out.println("Exiting Fast Food Storage...");
+    break;
+}
+
+// checking if user entered an option outside the menu
+if (!option.equals("0") &&
+    !option.equals("1") &&
+    !option.equals("2") &&
+    !option.equals("3") &&
+    !option.equals("4") &&
+    !option.equals("5") &&
+    !option.equals("6")) {
+
+    System.out.println("Invalid option! Please choose between 0 and 6.");
+}
+
+}
+
+// testing if the program reject a negative food weight
 FoodItem invalidBurger = new FoodItem("Burger", -100, LocalDate.now().plusDays(5));
 storage.addFood(invalidBurger);
     
 
-// testing a food item with an expired date
+// testing if the program reject a food with expired date
 FoodItem expiredPizza = new FoodItem("Pizza", 400, LocalDate.now().minusDays(2));
 storage.addFood(expiredPizza);
 
-// Testing a food item with a date over 14 days
+// testing if the program reject a date more than 14 days
 FoodItem futureBurger = new FoodItem("Burger", 250, LocalDate.now().plusDays(20));
 storage.addFood(futureBurger);
 
 
-    // displayFood to show all food items in storage
+    // showing all the foods after the validation tests
 storage.displayFood();
  
 
-// testing an invalid food name
+// testing if the program reject a food name not allowed
 FoodItem invalidFood = new FoodItem("Sushi", 200, LocalDate.now().plusDays(5));
 storage.addFood(invalidFood);
 
-// searchFood to find Pizza in storage
+// testing the search method using pizza
 FoodItem foundFood = storage.searchFood("Pizza");
 
+// checking if pizza was found inside storage
 if (foundFood != null) {
     System.out.println("Food found: " + foundFood.getName());
 
@@ -135,15 +192,16 @@ if (foundFood != null) {
     System.out.println("Food not found!");
 }
 
-// testing peekfood to see the next food without removint it 
+// testing peek to check the first food without removing
 FoodItem nextFood = storage.peekFood();
 
 if (nextFood != null) {
     System.out.println("Next food: " + nextFood.getName());
 }
 
+
     
-     // testing FIFO First In, First Out
+     // testing fifo to remove the oldest food first
         System.out.println("\nTesting FIFO:");
 
         storage.removeFoodFIFO();
@@ -151,7 +209,7 @@ if (nextFood != null) {
         storage.removeFoodFIFO();
         
         
-        // testing LIFO Last In, First Out
+        // testing lifo to remove the newest food first
         System.out.println("\nTesting LIFO:");
 
         storage.addFood(burger);
@@ -160,9 +218,10 @@ if (nextFood != null) {
         storage.removeFoodLIFO();
         storage.removeFoodLIFO();
 
-        // Testing the maximum storage capacity of 8 trays
+        // testing the maximum capacity of eight food trays
         FoodStorage fullStorage = new FoodStorage();
 
+        // trying to add nine foods to check the storage limit
         for (int i = 0; i < 9; i++) {
             FoodItem testFood = new FoodItem("Burger", 250, LocalDate.now().plusDays(5));
             fullStorage.addFood(testFood);
@@ -170,9 +229,11 @@ if (nextFood != null) {
 
         
         
-        // Testing removal from an empty storage
+        
+        // creating an empty storage to test removal
 FoodStorage emptyStorage = new FoodStorage();
 
+// testing fifo and lifo when there is no food inside
 emptyStorage.removeFoodFIFO();
 emptyStorage.removeFoodLIFO();
 
@@ -183,6 +244,3 @@ emptyStorage.removeFoodLIFO();
     
     
 }
-
-
-

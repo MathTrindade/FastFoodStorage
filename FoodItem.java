@@ -1,3 +1,4 @@
+
 package fastfoodstorage;
 
 /*
@@ -48,6 +49,11 @@ public class FoodItem {
     
     public LocalDateTime getTimeStored() {
        return timeStored;
+    }
+
+    // Update the time when food is stored
+    public void setTimeStored() {
+        this.timeStored = LocalDateTime.now();
     }
     
 }

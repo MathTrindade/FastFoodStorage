@@ -1,49 +1,60 @@
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package fastfoodstorage;
+
 import java.time.LocalDate;
-/**
- *
- * @author mathe
- */
+
 public class FoodStorage {
 
-    // Maximum number of food trays
+    // this is the maximum number of food trays i can have
     private final int MAX_SIZE = 8;
 
-    // Array to store the food items
+    // this array is where i keep all the food objects
     private FoodItem[] items = new FoodItem[MAX_SIZE];
 
-    // Positions and number of items
+    // front show where is the first food in storage
     private int front = 0;
+
+    // count is used to know how many foods are inside
     private int count = 0;
 
-    // to check if the storage is full
+
+    // this method check if the storage is already full
     public boolean isFull() {
+
         return count == MAX_SIZE;
     }
 
-    // to check if the storage is empty
+
+    // this method check if there is no food in storage
     public boolean isEmpty() {
+
         return count == 0;
     }
 
-    // add a new food item to the storage
+
+    // here i add a new food inside the storage
     public void addFood(FoodItem food) {
 
+        // first i check if the eight trays are already used
         if (isFull()) {
             System.out.println("Storage is full");
             return;
         }
 
-        
-        
-        // Check if the food name is allowed
+
+        // checking if the food object is null
+        if (food == null) {
+            System.out.println("Invalid food!");
+            return;
+        }
+
+
+        // getting the name from the food object
         String name = food.getName();
 
+
+        // only these five food names are accepted in the program
+        // equalsignorecase allow the name with small or capital letters
         if (name == null ||
             !(name.equalsIgnoreCase("Burger") ||
               name.equalsIgnoreCase("Pizza") ||
@@ -55,49 +66,70 @@ public class FoodStorage {
             return;
         }
 
-        
-        // Check if the food weight is valid
-        if (food.getWeight() <= 0) {
+
+        // food weight need to be a valid number bigger than zero
+        if (!Double.isFinite(food.getWeight()) || food.getWeight() <= 0) {
             System.out.println("Invalid weight! Weight must be greater than 0.");
             return;
         }
 
-        
-        
-        // Check if the best-before date is valid
+
+        // getting today date to compare with the food date
         LocalDate today = LocalDate.now();
 
+
+        // here i check if the food is expired or more than 14 days
+        // if the date is not accepted the food cannot enter storage
         if (food.getBestBeforeDate() == null ||
-            
-             food.getBestBeforeDate().isBefore(today) ||
-            
-             food.getBestBeforeDate().isAfter(today.plusDays(14))) {
+            food.getBestBeforeDate().isBefore(today) ||
+            food.getBestBeforeDate().isAfter(today.plusDays(14))) {
 
             System.out.println("Invalid date! Food must be valid within 14 days.");
             return;
         }
 
-        
-        
+
+        // this calculation find the next free position in the array
+        // the percentage operator help the position go back to zero
         int position = (front + count) % MAX_SIZE;
+
+
+        // updating the time when food is put inside storage
+        food.setTimeStored();
+
+
+        // saving the food in the position calculated before
         items[position] = food;
+
+        // increasing the number of foods inside storage
         count++;
 
         System.out.println("Food added successfully");
     }
 
-    // to remove the oldest food item (FIFO)
+
+    // fifo mean first in first out
+    // here i remove the food that entered first
     public FoodItem removeFoodFIFO() {
 
+        // cannot remove food if storage is empty
         if (isEmpty()) {
             System.out.println("Storage is empty!");
             return null;
         }
 
+
+        // getting the food from the front position
         FoodItem removedFood = items[front];
+
+
+        // making this position empty again
         items[front] = null;
 
+        // moving front to the next position in the array
         front = (front + 1) % MAX_SIZE;
+
+        // one food was removed so count go down
         count--;
 
         System.out.println("Food removed: " + removedFood.getName());
@@ -105,18 +137,30 @@ public class FoodStorage {
         return removedFood;
     }
 
-    // to remove the newest food item (LIFO)
+
+    // lifo mean last in first out
+    // here i remove the last food added in storage
     public FoodItem removeFoodLIFO() {
 
+        // checking if there is food to remove
         if (isEmpty()) {
             System.out.println("Storage is empty!");
             return null;
         }
 
+
+        // finding the position of the newest food
         int position = (front + count - 1) % MAX_SIZE;
 
+
+        // getting the food from this position
         FoodItem removedFood = items[position];
+
+
+        // removing the food from the array
         items[position] = null;
+
+        // decreasing the number of foods
         count--;
 
         System.out.println("Food removed: " + removedFood.getName());
@@ -124,51 +168,84 @@ public class FoodStorage {
         return removedFood;
     }
 
-    // Check the next food without removing it
+
+    // peek is used to see the first food without remove it
     public FoodItem peekFood() {
 
+        // checking if storage have any food
         if (isEmpty()) {
             System.out.println("Storage is empty!");
             return null;
         }
 
+
+        // returning the first food but keeping inside storage
         return items[front];
     }
 
-    // Display all food items currently in storage
+
+    // this method print all foods currently in storage
     public void displayFood() {
 
+        // if there is no food i show this message
         if (isEmpty()) {
             System.out.println("Storage is empty!");
             return;
         }
 
+
         System.out.println("Food items in storage:");
 
+
+        // this loop go through all foods that are stored
         for (int i = 0; i < count; i++) {
+
+            // calculating the correct position for each food
             int position = (front + i) % MAX_SIZE;
+
+
+            // getting the food from the array
             FoodItem food = items[position];
 
+
+            // showing name, weight, date and time stored
             System.out.println(
                 food.getName() + " - " +
                 food.getWeight() + "g - Best before: " +
-                food.getBestBeforeDate()
+                food.getBestBeforeDate() +
+                " - Stored at: " + food.getTimeStored()
             );
         }
     }
 
-    // search for a food item by its name
+
+    // this method search for a food using the name
     public FoodItem searchFood(String name) {
 
+        // cannot search if name is null
+        if (name == null) {
+            return null;
+        }
+
+
+        // checking each food in the storage
         for (int i = 0; i < count; i++) {
+
+            // getting the position of the food
             int position = (front + i) % MAX_SIZE;
+
+
             FoodItem food = items[position];
 
+
+            // comparing the food name with the name user entered
             if (food.getName().equalsIgnoreCase(name)) {
                 return food;
             }
         }
 
+
+        // if no food was found this method return null
         return null;
     }
 }
