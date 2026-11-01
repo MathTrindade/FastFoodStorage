@@ -115,7 +115,7 @@ if (option.equals("1")) {
     try {
     // asking the name of the food
     System.out.print("Enter food name: ");
-    String foodName = scanner.nextLine();
+    String foodName = scanner.nextLine().trim();
 
     // asking the weight and converting text to a number
     System.out.print("Enter food weight in grams: ");
@@ -127,6 +127,7 @@ if (option.equals("1")) {
 
     // creating the food object and trying to add in storage
     FoodItem newFood = new FoodItem(foodName, weight, date);
+    System.out.println("DEBUG food name: [" + newFood.getName() + "]");
     storage.addFood(newFood);
 
     // this catch show message if the weight is not a number
